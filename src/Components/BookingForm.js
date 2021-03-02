@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 import "../Layouts/Form.css"
 import Table from "./BookingTable"
 
-let displayTable = false
+// let displayTable = false
 const Form = () => {
   const initialValues = {
     select: false,
@@ -30,7 +30,7 @@ const Form = () => {
     setValues(initialValues)
 
     setBookingList(bookingList.concat(values))
-    displayTable = true
+    // displayTable = true
   }
 
   // the first time am reload site
@@ -85,8 +85,8 @@ const Form = () => {
       </form>
 
       <div className="orders">
-        {!displayTable && <h3>No new booking list</h3>}
-        {displayTable && <Table bookingList={bookingList} setBookingList={setBookingList} />}
+        {/* {!displayTable && <h3>No new booking list</h3>} */}
+        <Table bookingList={bookingList} setBookingList={setBookingList} />
       </div>
     </div>
   )
