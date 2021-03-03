@@ -7,7 +7,7 @@ import Table from "./BookingTable"
 // let displayTable = false
 const Form = () => {
   const initialValues = {
-    select: false,
+    confirmed: false,
     id: "",
     firstName: "",
     lastName: "",
@@ -25,12 +25,31 @@ const Form = () => {
     setValues({ ...values, [name]: value, id: uuidv4() })
   }
 
+  // Notice this is the higher level component and passed to the child
+  // the child only needs to call the function, rather than do the logic itself
+  const markAsConfirmed = (bookingToUpdate) => {
+    // I used map to have a pure function which is cleaner, but this could been
+    // done by just updating the bookingToUpdate directly too
+    const updatedBookings = bookingList.map(booking => {
+      // update the booking if the ID matches
+      if(booking.id === bookingToUpdate.id) {
+        return {
+          ...booking,
+          confirmed: !booking.confirmed // toggle false to true and the opposite
+        }
+      }
+      // return the booking as it is otherwise
+      return booking;
+    });
+
+    setBookingList(updatedBookings)
+  }
+
   const submitHandler = e => {
     e.preventDefault()
     setValues(initialValues)
 
     setBookingList(bookingList.concat(values))
-    // displayTable = true
   }
 
   // the first time am reload site
@@ -86,7 +105,7 @@ const Form = () => {
 
       <div className="orders">
         {/* {!displayTable && <h3>No new booking list</h3>} */}
-        <Table bookingList={bookingList} setBookingList={setBookingList} />
+        <Table markAsConfirmed={markAsConfirmed} bookingList={bookingList} />
       </div>
     </div>
   )

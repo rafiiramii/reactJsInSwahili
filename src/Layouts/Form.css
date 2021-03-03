@@ -205,3 +205,12 @@ tr:nth-child(even) {
 td > button {
   background-color: transparent;
 }
+
+
+.rows.confirmed {
+  background-color: green;
+}
+
+.rows.confirmed td {
+  color: white;
+}

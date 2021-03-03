@@ -26,31 +26,21 @@ const Table = props => {
           </thead>
 
           <tbody>
-            {props.bookingList.map((value, i) => {
+            {props.bookingList.map((booking, i) => {
               return (
-                <tr className="rows" key={i}>
-                  <td>{value.firstName}</td>
-                  <td>{value.lastName}</td>
-                  <td>{value.email}</td>
-                  <td>{value.telNumber}</td>
-                  <td>{value.cover}</td>
-                  <td>{value.date}</td>
-                  <td>{value.time}</td>
+                <tr className={`rows ${booking.confirmed? 'confirmed': ''}`} key={i}>
+                  <td>{booking.firstName}</td>
+                  <td>{booking.lastName}</td>
+                  <td>{booking.email}</td>
+                  <td>{booking.telNumber}</td>
+                  <td>{booking.cover}</td>
+                  <td>{booking.date}</td>
+                  <td>{booking.time}</td>
                   <td>
                     <input
                       type="checkbox"
-                      checked={value.select}
-                      onChange={e => {
-                        let checked = e.target.checked
-                        props.setBookingList(
-                          props.bookingList.map(data => {
-                            if (value.id === data.id) {
-                              data.select = checked
-                            }
-                            return data
-                          })
-                        )
-                      }}
+                      checked={booking.confirmed}
+                      onChange={() => props.markAsConfirmed(booking)}
                     />
                   </td>
                 </tr>
