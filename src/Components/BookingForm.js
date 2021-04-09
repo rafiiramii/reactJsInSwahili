@@ -1,111 +1,130 @@
 import React, { useState, useEffect } from "react"
-import { v4 as uuidv4 } from "uuid"
+import axios from "axios"
 
 import "../Layouts/Form.css"
 import Table from "./BookingTable"
 
-// let displayTable = false
 const Form = () => {
   const initialValues = {
-    confirmed: false,
+    seated: false,
     id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    telNumber: "",
-    cover: "",
-    date: "",
-    time: ""
+    FirstName: "",
+    LastName: "",
+    Email: "",
+    TelNumber: "",
+    Cover: "",
+    Date: ""
   }
-  // const [firtName, setFisrtName] = useState("")
   const [values, setValues] = useState(initialValues)
   const [bookingList, setBookingList] = useState([])
   const onChange = e => {
+    console.log(e.target)
     const { name, value } = e.target
-    setValues({ ...values, [name]: value, id: uuidv4() })
+    setValues({ ...values, [name]: value })
   }
 
-  // Notice this is the higher level component and passed to the child
-  // the child only needs to call the function, rather than do the logic itself
-  const markAsConfirmed = (bookingToUpdate) => {
-    // I used map to have a pure function which is cleaner, but this could been
-    // done by just updating the bookingToUpdate directly too
+  const markAsSeated = async (bookingToUpdate, value) => {
+    const bookingId = bookingToUpdate.id
+    const updatedBooking = {
+      ...bookingToUpdate,
+      seated: value
+    }
+    await axios.put(`http://localhost:1437/bookings/${bookingId}`, updatedBooking)
+
     const updatedBookings = bookingList.map(booking => {
       // update the booking if the ID matches
-      if(booking.id === bookingToUpdate.id) {
-        return {
-          ...booking,
-          confirmed: !booking.confirmed // toggle false to true and the opposite
-        }
+      if (booking.id === updatedBooking.id) {
+        return updatedBooking
       }
       // return the booking as it is otherwise
-      return booking;
-    });
-
+      return booking
+    })
     setBookingList(updatedBookings)
   }
 
-  const submitHandler = e => {
+  // delete items
+  const deleteItem = async (bookingToUpdate, value) => {
+    const bookingId = bookingToUpdate.id
+    const updatedBooking = {
+      ...bookingToUpdate,
+      seated: value
+    }
+    await axios.delete(`http://localhost:1437/bookings/${bookingId}`, updatedBooking)
+
+    const updatedBookings = bookingList.map(booking => {
+      // update the booking if the ID matches
+      if (booking.id === updatedBooking.id) {
+        return updatedBooking
+      }
+      // return the booking as it is otherwise
+      return booking
+    })
+    setBookingList(updatedBookings)
+  }
+  // end delete
+
+  const submitHandler = async e => {
     e.preventDefault()
     setValues(initialValues)
-
+    const { data } = await axios.post("http://localhost:1437/bookings", values)
+    console.log(data)
     setBookingList(bookingList.concat(values))
   }
-
-  // the first time am reload site
+  // PUT - update
+  // POST - create
   useEffect(() => {
-    if (localStorage.getItem("bookings")) {
-      setBookingList(JSON.parse(localStorage.getItem("bookings")))
+    const fetchData = async () => {
+      // const response = await fetch("http://localhost:1437/bookings")
+      // const data = await response.json()
+      const { data } = await axios.get("http://localhost:1437/bookings")
+      setBookingList(data)
     }
+
+    fetchData()
   }, [])
 
-  // at any time you render
-  useEffect(() => {
-    localStorage.setItem("bookings", JSON.stringify(bookingList))
-  }, [bookingList])
-  // console.log(bookingList)
   return (
     <div className="formDetails">
       <form onSubmit={submitHandler} className="bookingForm">
         <p>
           <label>First Name</label>
-          <input type="text" onChange={onChange} value={values.firstName} name="firstName" />
+          <input type="text" onChange={onChange} value={values.FirstName} name="FirstName" />
         </p>
 
         <p>
           <label>Last Name</label>
-          <input type="text" onChange={onChange} value={values.lastName} name="lastName" />
+          <input type="text" onChange={onChange} value={values.LastName} name="LastName" />
         </p>
 
         <p>
           <label>Email</label>
-          <input type="email" onChange={onChange} value={values.email} name="email" />
+          <input type="email" onChange={onChange} value={values.Email} name="Email" />
         </p>
         <p>
           <label>Tel Number</label>
-          <input type="number" onChange={onChange} value={values.telNumber} name="telNumber" />
+          <input type="tel" onChange={onChange} value={values.TelNumber} name="TelNumber" />
         </p>
 
         <p>
           <label>Cover</label>
-          <input type="number" onChange={onChange} value={values.cover} name="cover" />
+          <input type="text" onChange={onChange} value={values.Cover} name="Cover" />
         </p>
         <p>
           <label>Date</label>
-          <input type="date" onChange={onChange} value={values.date} name="date" />
+          <input type="date" onChange={onChange} value={values.Date} name="Date" />
         </p>
-
+        {/* 
         <p>
           <label>Time</label>
-          <input type="time" onChange={onChange} value={values.time} name="time" />
-        </p>
+          <input type="time" onChange={onChange} value={values.Time} name="Time" />
+        </p> */}
 
         <button type="submit">submit</button>
       </form>
 
       <div className="orders">
         {/* {!displayTable && <h3>No new booking list</h3>} */}
-        <Table markAsConfirmed={markAsConfirmed} bookingList={bookingList} />
+        <Table markAsConfirmed={markAsSeated} deleteItem={deleteItem} bookingList={bookingList} />
       </div>
     </div>
   )

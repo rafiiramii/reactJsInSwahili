@@ -20,7 +20,8 @@ const Table = props => {
               <th>Tel Number</th>
               <th>Cover</th>
               <th>Date</th>
-              <th>Time</th>
+              {/* <th>Time</th> */}
+
               <th>Confirm</th>
             </tr>
           </thead>
@@ -28,20 +29,22 @@ const Table = props => {
           <tbody>
             {props.bookingList.map((booking, i) => {
               return (
-                <tr className={`rows ${booking.confirmed? 'confirmed': ''}`} key={i}>
-                  <td>{booking.firstName}</td>
-                  <td>{booking.lastName}</td>
-                  <td>{booking.email}</td>
-                  <td>{booking.telNumber}</td>
-                  <td>{booking.cover}</td>
-                  <td>{booking.date}</td>
-                  <td>{booking.time}</td>
+                <tr className={`rows ${booking.seated ? "seated" : ""}`} key={i}>
+                  <td>{booking.FirstName}</td>
+                  <td>{booking.LastName}</td>
+                  <td>{booking.Email}</td>
+                  <td>{booking.TelNumber}</td>
+                  <td>{booking.Cover}</td>
+                  <td>{booking.Date}</td>
+                  {/* <td>{booking.Time}</td> */}
                   <td>
-                    <input
-                      type="checkbox"
-                      checked={booking.confirmed}
-                      onChange={() => props.markAsConfirmed(booking)}
-                    />
+                    <input type="checkbox" checked={booking.seated} onChange={event => props.markAsConfirmed(booking, event.target.checked)} />
+                  </td>
+
+                  <td>
+                    <button type="button" onClick={e => props.deleteItem(booking, e.target)}>
+                      Delete
+                    </button>
                   </td>
                 </tr>
               )
