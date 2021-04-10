@@ -42,27 +42,7 @@ const Form = () => {
     setBookingList(updatedBookings)
   }
 
-  // delete items
-  const deleteItem = async (bookingToUpdate, value) => {
-    const bookingId = bookingToUpdate.id
-    const updatedBooking = {
-      ...bookingToUpdate,
-      seated: value
-    }
-    await axios.delete(`http://localhost:1437/bookings/${bookingId}`, updatedBooking)
-
-    const updatedBookings = bookingList.map(booking => {
-      // update the booking if the ID matches
-      if (booking.id === updatedBooking.id) {
-        return updatedBooking
-      }
-      // return the booking as it is otherwise
-      return booking
-    })
-    setBookingList(updatedBookings)
-  }
-  // end delete
-
+  // submit
   const submitHandler = async e => {
     e.preventDefault()
     setValues(initialValues)
@@ -70,19 +50,28 @@ const Form = () => {
     console.log(data)
     setBookingList(bookingList.concat(values))
   }
-  // PUT - update
-  // POST - create
+  // delete items
+  const deleteItem = async (bookingToUpdate, value) => {
+    const bookingId = bookingToUpdate.id
+    const updatedBooking = {
+      ...bookingToUpdate,
+      seated: value
+    }
+    console.log(bookingId)
+
+    await axios.delete(`http://localhost:1437/bookings/${bookingId}`, updatedBooking)
+
+    setBookingList(prev => prev.filter(booking => booking.id != updatedBooking.id))
+  }
+  // end delete
   useEffect(() => {
     const fetchData = async () => {
-      // const response = await fetch("http://localhost:1437/bookings")
-      // const data = await response.json()
       const { data } = await axios.get("http://localhost:1437/bookings")
       setBookingList(data)
     }
 
     fetchData()
   }, [])
-
   return (
     <div className="formDetails">
       <form onSubmit={submitHandler} className="bookingForm">
@@ -113,17 +102,11 @@ const Form = () => {
           <label>Date</label>
           <input type="date" onChange={onChange} value={values.Date} name="Date" />
         </p>
-        {/* 
-        <p>
-          <label>Time</label>
-          <input type="time" onChange={onChange} value={values.Time} name="Time" />
-        </p> */}
 
         <button type="submit">submit</button>
       </form>
 
       <div className="orders">
-        {/* {!displayTable && <h3>No new booking list</h3>} */}
         <Table markAsConfirmed={markAsSeated} deleteItem={deleteItem} bookingList={bookingList} />
       </div>
     </div>
